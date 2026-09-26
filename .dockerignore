@@ -1,0 +1,17 @@
+# Local development
+.next
+node_modules
+
+# Git
+.git
+.gitignore
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+
+# Docs / misc
+README.md
+*.md
+backups

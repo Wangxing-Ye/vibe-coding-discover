@@ -1,0 +1,11 @@
+{
+  "network": "baseSepolia",
+  "chainId": 84532,
+  "token": "0xe73d12aacb133a316cd4b97318b3c83561e659e0",
+  "claim": "0x1b434d4d010e28a64ac8f6caefdc9c12d9eca134",
+  "dailyClaim": "0x1b434d4d010e28a64ac8f6caefdc9c12d9eca134",
+  "rewards": "0x021f30ea914950ada119dc0dd035b9ac3c2bdb37",
+  "signer": "0x59E48DcdD0b4E39cA11546E023D54d24f9aD9843",
+  "deployer": "0x427C53b0FD11AC7253339eD61138F6d1AdDdD4Fc",
+  "deployedAt": "2026-09-23T18:53:02.915Z"
+}

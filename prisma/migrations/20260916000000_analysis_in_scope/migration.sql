@@ -1,0 +1,1 @@
+ALTER TABLE "project_analysis" ADD COLUMN IF NOT EXISTS "inScope" BOOLEAN NOT NULL DEFAULT true;
