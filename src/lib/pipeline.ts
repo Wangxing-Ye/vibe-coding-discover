@@ -639,7 +639,7 @@ export async function processSubmission(submissionId: string): Promise<ProcessRe
   });
 
   try {
-    let githubUrl = submission.githubUrl;
+    const githubUrl = submission.githubUrl;
 
     if ((submission.sourceType === "x" || submission.sourceType === "youtube") && !githubUrl) {
       const extracted =
