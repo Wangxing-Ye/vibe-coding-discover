@@ -51,7 +51,9 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
   const pickerRef = useRef<HTMLDivElement>(null);
 
   const rewardsAddress = process.env.NEXT_PUBLIC_VIBECD_REWARDS_ADDRESS as `0x${string}` | undefined;
-  const configured = Boolean(rewardsAddress && process.env.NEXT_PUBLIC_VIBECD_TOKEN_ADDRESS);
+  const tokenAddress = process.env.NEXT_PUBLIC_VIBECD_TOKEN_ADDRESS as `0x${string}` | undefined;
+  const configured = Boolean(rewardsAddress && tokenAddress);
+  const tokenTxUrl = `https://sepolia.basescan.org/token/${tokenAddress ?? "0xe73d12aacb133a316cd4b97318b3c83561e659e0"}#transactions`;
 
   const refreshStatus = useCallback(async () => {
     try {
@@ -167,7 +169,10 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
     <section className="mt-10 rounded-2xl border border-border px-6 py-8 text-center">
       <h2 className="text-lg font-semibold tracking-tight">Rewards Claim</h2>
       <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-secondary">
-        VIBECD is a commemorative memecoin celebrating vibe coding on the Base network.
+        <a href={tokenTxUrl} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+          VIBECD
+        </a>{" "}
+        is a commemorative memecoin celebrating vibe coding on the Base network.
         <br />
         Claiming does not imply investment value or future returns.
         <br />

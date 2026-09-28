@@ -151,7 +151,7 @@ export function ClaimSection() {
       <h2 className="mt-2 text-xl font-semibold tracking-tight">
         {tokenAddress ? (
           <a
-            href={`https://sepolia.basescan.org/token/${tokenAddress}`}
+            href={`https://sepolia.basescan.org/token/${tokenAddress}#transactions`}
             target="_blank"
             rel="noreferrer"
             className="text-blue-600 hover:underline"
