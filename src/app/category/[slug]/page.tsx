@@ -40,6 +40,7 @@ export default async function CategoryPage({
   const query = await searchParams;
   const category = getCategoryBySlug(slug);
   if (!category) notFound();
+  const categorySlug = category.slug;
 
   const view = query.view === "list" ? "list" : "cards";
   const order = query.order === "recent" ? "recent" : "stars";
@@ -65,7 +66,7 @@ export default async function CategoryPage({
     if (nextPeriod === "today") nextParams.set("period", "today");
     if (next.page && next.page > 1) nextParams.set("page", String(next.page));
     const qs = nextParams.toString();
-    return qs ? `/category/${category.slug}?${qs}` : `/category/${category.slug}`;
+    return qs ? `/category/${categorySlug}?${qs}` : `/category/${categorySlug}`;
   }
 
   const pillQuery = new URLSearchParams();
