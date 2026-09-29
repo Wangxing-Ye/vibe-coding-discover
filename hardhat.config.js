@@ -19,7 +19,7 @@ module.exports = {
   networks: {
     hardhat: {},
     baseSepolia: {
-      url: process.env.BASE_SEPOLIA_RPC_URL || "https://sepolia.base.org",
+      url: process.env.BASE_RPC_URL || "https://sepolia.base.org",
       chainId: 84532,
       accounts,
     },

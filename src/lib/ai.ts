@@ -39,13 +39,13 @@ function client() {
   }
   return new OpenAI({
     apiKey,
-    baseURL: process.env.AI_BASE_URL || "https://api.deepseek.com",
+    baseURL: process.env.AI_BASE_URL || "https://api.openai.com/v1",
   });
 }
 
 export async function analyzeProject(meta: GithubMetadata): Promise<StructuredAnalysis> {
   const openai = client();
-  const model = process.env.AI_MODEL || "deepseek-chat";
+  const model = process.env.AI_MODEL || "gpt-6-luna";
 
   const prompt = `You are classifying a GitHub open source project for VibeCodingDiscover, an AI-native discovery layer for open source.
 

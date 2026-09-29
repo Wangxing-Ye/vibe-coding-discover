@@ -34,7 +34,7 @@ const config = createConfig({
   multiInjectedProviderDiscovery: true,
   transports: {
     [baseSepolia.id]: http(
-      process.env.NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL || "https://base-sepolia-rpc.publicnode.com",
+      process.env.NEXT_PUBLIC_BASE_RPC_URL || "https://base-sepolia-rpc.publicnode.com",
     ),
   },
   ssr: true,

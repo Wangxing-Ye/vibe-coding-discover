@@ -1,3 +1,15 @@
+x-next-public-build-args: &next-public-build-args
+  NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-}
+  NEXT_PUBLIC_POSTHOG_KEY: ${NEXT_PUBLIC_POSTHOG_KEY:-}
+  NEXT_PUBLIC_POSTHOG_HOST: ${NEXT_PUBLIC_POSTHOG_HOST:-}
+  NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN:-}
+  NEXT_PUBLIC_BASE_CHAIN_ID: ${NEXT_PUBLIC_BASE_CHAIN_ID:-}
+  NEXT_PUBLIC_VIBECD_TOKEN_ADDRESS: ${NEXT_PUBLIC_VIBECD_TOKEN_ADDRESS:-}
+  NEXT_PUBLIC_VIBECD_CLAIM_ADDRESS: ${NEXT_PUBLIC_VIBECD_CLAIM_ADDRESS:-}
+  NEXT_PUBLIC_VIBECD_REWARDS_ADDRESS: ${NEXT_PUBLIC_VIBECD_REWARDS_ADDRESS:-}
+  NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: ${NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID:-}
+  NEXT_PUBLIC_BASE_RPC_URL: ${NEXT_PUBLIC_BASE_RPC_URL:-}
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -16,7 +28,9 @@ services:
       retries: 10
 
   web:
-    build: .
+    build:
+      context: .
+      args: *next-public-build-args
     ports:
       - "3000:3000"
     env_file: .env
@@ -29,7 +43,9 @@ services:
     profiles: ["app"]
 
   worker:
-    build: .
+    build:
+      context: .
+      args: *next-public-build-args
     env_file: .env
     environment:
       DATABASE_URL: postgresql://vibe:vibe@postgres:5432/vibecodingdiscover

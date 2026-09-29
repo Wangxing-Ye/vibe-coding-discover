@@ -93,8 +93,8 @@ npm run import:projects -- --live --ai   # refresh GitHub + AI analysis
 
 ## Production (VPS)
 
-1. Copy `.env.example` to `.env` and fill secrets.
-2. `docker compose --profile app up -d --build`
+1. Copy `.env.example` to `.env` and fill secrets (including `NEXT_PUBLIC_VIBECD_*`).
+2. `docker compose --profile app up -d --build` — `NEXT_PUBLIC_*` are baked in at image build; changing them later needs another `--build`.
 3. Point DNS to the VPS and use [deploy/Caddyfile](deploy/Caddyfile) for HTTPS.
 4. Cron daily: `scripts/backup.sh`
 

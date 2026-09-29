@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { logoutAction } from "../actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminProtectedLayout({ children }: { children: React.ReactNode }) {
   if (!(await isAdminAuthenticated())) {
     redirect("/admin/login");

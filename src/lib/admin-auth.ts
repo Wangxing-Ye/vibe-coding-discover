@@ -24,12 +24,19 @@ export function verifyAdminPassword(password: string) {
   return timingSafeEqual(a, b);
 }
 
+function cookieSecure() {
+  if (process.env.COOKIE_SECURE === "true" || process.env.COOKIE_SECURE === "1") return true;
+  if (process.env.COOKIE_SECURE === "false" || process.env.COOKIE_SECURE === "0") return false;
+  return (process.env.NEXT_PUBLIC_SITE_URL || "").startsWith("https://");
+}
+
 export async function setAdminSession() {
   const store = await cookies();
   store.set(COOKIE, sign(), {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    // NODE_ENV=production alone is not enough: Secure cookies are not sent on http://IP:3000.
+    secure: cookieSecure(),
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });

@@ -55,7 +55,7 @@ export function claimAddresses() {
 }
 
 function rpcUrl() {
-  return process.env.BASE_SEPOLIA_RPC_URL || "https://base-sepolia-rpc.publicnode.com";
+  return process.env.BASE_RPC_URL || "https://base-sepolia-rpc.publicnode.com";
 }
 
 export function claimPublicClient() {

@@ -95,7 +95,7 @@ async function deploy(artifacts) {
   const account = privateKeyToAccount(normalized);
   const signerAddress = process.env.CLAIM_SIGNER_ADDRESS || account.address;
 
-  const transport = http(process.env.BASE_SEPOLIA_RPC_URL || "https://base-sepolia-rpc.publicnode.com");
+  const transport = http(process.env.BASE_RPC_URL || "https://base-sepolia-rpc.publicnode.com");
   const publicClient = createPublicClient({ chain: baseSepolia, transport });
   const walletClient = createWalletClient({ account, chain: baseSepolia, transport });
 
