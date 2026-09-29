@@ -184,7 +184,7 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
         Claiming VIBECD is free. You pay the network gas fee for the on-chain transaction.
       </p>
       <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-secondary">
-        20,000 VIBECD rewards for each successful published submission.
+        20,000 VIBECD rewards for each newly published submission.
         <br />
         Daily rewards are limited to 10 submissions once per wallet once per IP per day.
       </p>

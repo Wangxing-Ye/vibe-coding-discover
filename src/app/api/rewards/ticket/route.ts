@@ -11,6 +11,7 @@ import {
   signRewardTicket,
   utcDay,
 } from "@/lib/rewards";
+import { CLAIMABLE_REWARD_STATUSES, voidIneligibleSubmissionRewards } from "@/lib/submission-reward";
 
 export const dynamic = "force-dynamic";
 
@@ -50,10 +51,12 @@ export async function GET(request: NextRequest) {
   const day = utcDay();
   const { rewards, token, chainId } = claimAddresses();
 
+  await voidIneligibleSubmissionRewards(ip);
+
   const open = await prisma.submissionReward.findMany({
     where: {
       ip,
-      status: { in: ["pending", "issued"] },
+      status: { in: [...CLAIMABLE_REWARD_STATUSES] },
     },
     orderBy: { createdAt: "asc" },
   });
@@ -64,13 +67,13 @@ export async function GET(request: NextRequest) {
   const pending = await prisma.submissionReward.findMany({
     where: {
       ip,
-      status: { in: ["pending", "issued"] },
+      status: { in: [...CLAIMABLE_REWARD_STATUSES] },
     },
     orderBy: { createdAt: "asc" },
   });
 
   const grantedToday = await prisma.submissionReward.count({
-    where: { ip, day },
+    where: { ip, day, status: { not: "void" } },
   });
 
   return NextResponse.json({
@@ -111,10 +114,12 @@ export async function POST(request: NextRequest) {
   const day = utcDay();
   const { rewards, token, chainId } = claimAddresses();
 
+  await voidIneligibleSubmissionRewards(ip);
+
   const open = await prisma.submissionReward.findMany({
     where: {
       ip,
-      status: { in: ["pending", "issued"] },
+      status: { in: [...CLAIMABLE_REWARD_STATUSES] },
     },
     orderBy: { createdAt: "asc" },
   });
@@ -129,7 +134,7 @@ export async function POST(request: NextRequest) {
   const rows = await prisma.submissionReward.findMany({
     where: {
       ip,
-      status: { in: ["pending", "issued"] },
+      status: { in: [...CLAIMABLE_REWARD_STATUSES] },
     },
     orderBy: { createdAt: "asc" },
   });

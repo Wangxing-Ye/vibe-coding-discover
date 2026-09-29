@@ -70,7 +70,7 @@ export async function publishProject(projectId: string) {
   });
   const { maybeGrantSubmissionReward } = await import("@/lib/submission-reward");
   for (const row of linked) {
-    await maybeGrantSubmissionReward(row.id);
+    await maybeGrantSubmissionReward(row.id, { newlyPublished: true });
   }
   noticeRedirect(projectId, "published");
 }

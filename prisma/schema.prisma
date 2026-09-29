@@ -231,7 +231,7 @@ model SubmissionReward {
   ip           String
   day          Int
   amount       String     @default("20000")
-  /// pending | issued | claimed
+  /// pending | issued | claimed | void
   status       String     @default("pending")
   nonce        String?
   claimWallet  String?

@@ -395,8 +395,6 @@ async function alreadyPublishedResult(
       notes: "Already published.",
     },
   });
-  const { maybeGrantSubmissionReward } = await import("./submission-reward");
-  await maybeGrantSubmissionReward(submissionId);
   return {
     slug: project.slug,
     slugs: [project.slug],
@@ -529,7 +527,7 @@ async function ingestKnownGithub(submissionId: string, githubUrl: string): Promi
     projectCreatedAt: project.createdAt,
   });
   const { maybeGrantSubmissionReward } = await import("./submission-reward");
-  await maybeGrantSubmissionReward(submissionId);
+  await maybeGrantSubmissionReward(submissionId, { newlyPublished: true });
   return {
     slug: project.slug,
     slugs: [project.slug],

@@ -9,7 +9,7 @@ Short memorial meme token for Vibe Coding Discover.
   - 80% → daily claim vault (`VIBECDDailyClaim`)
   - 20% → submission rewards vault (`VIBECDRewardsClaim`)
 - Daily claim: 10,000 / wallet / UTC day (1×)
-- Submission reward: 20,000 per published submission (max 10 / IP / UTC day)
+- Submission reward: 20,000 per newly published submission (max 10 / IP / UTC day)
 - IP: 1 daily-claim ticket / UTC day (backend)
 - Daily global cap (daily claim): 100,000,000
 - Network: Base (`8453`)
