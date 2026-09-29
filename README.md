@@ -100,8 +100,8 @@ npm run import:projects -- --live --ai   # refresh GitHub + AI analysis
 
 KPI events: `project_view`, `github_click`, `search_query`.
 
-## VIBECD claim (Base Sepolia)
+## VIBECD claim (Base)
 
 VIBECD is a commemorative memecoin for vibe coding. It is not a security, an investment product, or a guarantee of any economic benefit.
 
-Daily claim and submission rewards are on the homepage and Submit page. Compile and deploy from **[contracts/README.md](vscode-file://vscode-app/Applications/Cursor.app/Contents/Resources/app/out/vs/code/electron-sandbox/workbench/contracts/README.md)**.
+Daily claim and submission rewards are on the homepage and Submit page. Compile and deploy from **[contracts/README.md](contracts/README.md)**.

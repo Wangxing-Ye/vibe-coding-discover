@@ -1,6 +1,6 @@
 import { createPublicClient, createWalletClient, http, parseAbi, type Address, type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { baseSepolia } from "viem/chains";
+import { baseChain, baseRpcUrl } from "./base-chain";
 import { claimAddresses, utcDay } from "./claim";
 
 export const REWARD_AMOUNT = BigInt(20_000) * BigInt(10) ** BigInt(18);
@@ -39,12 +39,12 @@ export function rewardsEnabled() {
 }
 
 function rpcUrl() {
-  return process.env.BASE_RPC_URL || "https://base-sepolia-rpc.publicnode.com";
+  return baseRpcUrl();
 }
 
 export function rewardsPublicClient() {
   return createPublicClient({
-    chain: baseSepolia,
+    chain: baseChain,
     transport: http(rpcUrl()),
   });
 }
@@ -79,7 +79,7 @@ export async function signRewardTicket(options: {
 
   const client = createWalletClient({
     account,
-    chain: baseSepolia,
+    chain: baseChain,
     transport: http(rpcUrl()),
   });
 

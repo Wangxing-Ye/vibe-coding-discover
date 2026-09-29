@@ -1,0 +1,11 @@
+{
+  "network": "base",
+  "chainId": 8453,
+  "token": "0x848fa60cc5652d38c8ab61700964d8ba6682dae1",
+  "claim": "0xfef6a0f15e3783540df1f58f4bcd7a7e28751ec6",
+  "dailyClaim": "0xfef6a0f15e3783540df1f58f4bcd7a7e28751ec6",
+  "rewards": "0x11bde142c37f76b41ff3b2bf5db96f552d427578",
+  "signer": "0x59E48DcdD0b4E39cA11546E023D54d24f9aD9843",
+  "deployer": "0xc447363f85b62e760f024d636e3B2CA6386209b8",
+  "deployedAt": "2026-09-29T18:25:04.968Z"
+}

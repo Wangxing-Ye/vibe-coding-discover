@@ -1,6 +1,6 @@
 import { createPublicClient, createWalletClient, http, parseAbi, type Hex, type Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { baseSepolia } from "viem/chains";
+import { BASE_CHAIN_ID, baseChain, baseRpcUrl } from "./base-chain";
 
 export const CLAIM_AMOUNT = BigInt(10_000) * BigInt(10) ** BigInt(18);
 export const DAILY_GLOBAL_CAP = BigInt(100_000_000) * BigInt(10) ** BigInt(18);
@@ -50,17 +50,17 @@ export function claimAddresses() {
     token: (process.env.NEXT_PUBLIC_VIBECD_TOKEN_ADDRESS || "") as Address,
     claim: (process.env.NEXT_PUBLIC_VIBECD_CLAIM_ADDRESS || "") as Address,
     rewards: (process.env.NEXT_PUBLIC_VIBECD_REWARDS_ADDRESS || "") as Address,
-    chainId: Number(process.env.NEXT_PUBLIC_BASE_CHAIN_ID || 84532),
+    chainId: Number(process.env.NEXT_PUBLIC_BASE_CHAIN_ID || BASE_CHAIN_ID),
   };
 }
 
 function rpcUrl() {
-  return process.env.BASE_RPC_URL || "https://base-sepolia-rpc.publicnode.com";
+  return baseRpcUrl();
 }
 
 export function claimPublicClient() {
   return createPublicClient({
-    chain: baseSepolia,
+    chain: baseChain,
     transport: http(rpcUrl()),
   });
 }
@@ -109,7 +109,7 @@ export async function signClaimTicket(options: {
 
   const client = createWalletClient({
     account,
-    chain: baseSepolia,
+    chain: baseChain,
     transport: http(rpcUrl()),
   });
 

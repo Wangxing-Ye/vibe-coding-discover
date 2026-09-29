@@ -15,8 +15,8 @@
     "db:backup": "sh scripts/backup.sh",
     "postinstall": "prisma generate",
     "contracts:compile": "node scripts/compile-vibecd.js",
-    "contracts:deploy:base-sepolia": "node scripts/compile-vibecd.js --deploy",
-    "contracts:verify:base-sepolia": "node scripts/verify-vibecd.js"
+    "contracts:deploy:base": "node scripts/compile-vibecd.js --deploy",
+    "contracts:verify:base": "node scripts/verify-vibecd.js"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",

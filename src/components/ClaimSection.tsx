@@ -9,7 +9,8 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { base } from "wagmi/chains";
+import { basescanTokenTxUrl } from "@/lib/base-chain";
 import { claimAbi } from "@/lib/claim";
 import { buildWalletMenuRows, formatWalletError, type WalletMenuRow } from "@/lib/wallet-menu";
 
@@ -45,7 +46,7 @@ export function ClaimSection() {
   const menuRows = useMemo(() => buildWalletMenuRows(connectors), [connectors]);
 
   const status = useMemo(() => {
-    if (isSuccess) return "Claimed 10,000 VIBECD on Base Sepolia.";
+    if (isSuccess) return "Claimed 10,000 VIBECD on Base.";
     if (isConfirming) return "Confirming transaction…";
     if (isWriting || busy) return "Check your wallet…";
     if (isConnecting) return "Connecting wallet…";
@@ -81,7 +82,7 @@ export function ClaimSection() {
       setError(null);
       if (row.connector) {
         try {
-          await connectAsync({ connector: row.connector, chainId: baseSepolia.id });
+          await connectAsync({ connector: row.connector, chainId: base.id });
           setPickerOpen(false);
         } catch (err) {
           setError(formatWalletError(err, "Could not connect wallet"));
@@ -110,8 +111,8 @@ export function ClaimSection() {
     }
     setBusy(true);
     try {
-      if (chainId !== baseSepolia.id) {
-        await switchChainAsync({ chainId: baseSepolia.id });
+      if (chainId !== base.id) {
+        await switchChainAsync({ chainId: base.id });
       }
 
       const res = await fetch("/api/claim/ticket", {
@@ -129,7 +130,7 @@ export function ClaimSection() {
         abi: claimAbi,
         functionName: "claim",
         args: [BigInt(json.day), BigInt(json.nonce), json.signature],
-        chainId: baseSepolia.id,
+        chainId: base.id,
       });
     } catch (err) {
       setError(formatWalletError(err, "Claim failed"));
@@ -151,7 +152,7 @@ export function ClaimSection() {
       <h2 className="mt-2 text-xl font-semibold tracking-tight">
         {tokenAddress ? (
           <a
-            href={`https://sepolia.basescan.org/token/${tokenAddress}#transactions`}
+            href={basescanTokenTxUrl(tokenAddress)}
             target="_blank"
             rel="noreferrer"
             className="text-blue-600 hover:underline"
@@ -253,7 +254,7 @@ export function ClaimSection() {
       </div>
       {!configured ? (
         <p className="mt-4 text-sm text-warning">
-          Deploy contracts to Base Sepolia and set NEXT_PUBLIC_VIBECD_* env vars to enable claiming.
+          Deploy contracts to Base and set NEXT_PUBLIC_VIBECD_* env vars to enable claiming.
         </p>
       ) : null}
       {status ? <p className="mt-4 text-sm text-success">{status}</p> : null}

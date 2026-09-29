@@ -9,7 +9,8 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { base } from "wagmi/chains";
+import { basescanTokenTxUrl } from "@/lib/base-chain";
 import { rewardsAbi } from "@/lib/rewards";
 import { buildWalletMenuRows, formatWalletError, type WalletMenuRow } from "@/lib/wallet-menu";
 
@@ -53,7 +54,7 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
   const rewardsAddress = process.env.NEXT_PUBLIC_VIBECD_REWARDS_ADDRESS as `0x${string}` | undefined;
   const tokenAddress = process.env.NEXT_PUBLIC_VIBECD_TOKEN_ADDRESS as `0x${string}` | undefined;
   const configured = Boolean(rewardsAddress && tokenAddress);
-  const tokenTxUrl = `https://sepolia.basescan.org/token/${tokenAddress ?? "0xe73d12aacb133a316cd4b97318b3c83561e659e0"}#transactions`;
+  const tokenTxUrl = tokenAddress ? basescanTokenTxUrl(tokenAddress) : undefined;
 
   const refreshStatus = useCallback(async () => {
     try {
@@ -112,8 +113,8 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
     }
     setBusy(true);
     try {
-      if (chainId !== baseSepolia.id) {
-        await switchChainAsync({ chainId: baseSepolia.id });
+      if (chainId !== base.id) {
+        await switchChainAsync({ chainId: base.id });
       }
       const res = await fetch("/api/rewards/ticket", {
         method: "POST",
@@ -130,7 +131,7 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
         abi: rewardsAbi,
         functionName: "claim",
         args: [BigInt(json.day), BigInt(json.nonce), BigInt(json.amount) * BigInt(10) ** BigInt(18), json.signature],
-        chainId: baseSepolia.id,
+        chainId: base.id,
       });
       setPendingConfirm({ wallet: address, nonce: json.nonce });
     } catch (err) {
@@ -145,7 +146,7 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
       setError(null);
       if (row.connector) {
         try {
-          await connectAsync({ connector: row.connector, chainId: baseSepolia.id });
+          await connectAsync({ connector: row.connector, chainId: base.id });
           setPickerOpen(false);
         } catch (err) {
           setError(formatWalletError(err, "Could not connect wallet"));
@@ -169,9 +170,13 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
     <section className="mt-10 rounded-2xl border border-border px-6 py-8 text-center">
       <h2 className="text-lg font-semibold tracking-tight">Rewards Claim</h2>
       <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-secondary">
-        <a href={tokenTxUrl} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
-          VIBECD
-        </a>{" "}
+        {tokenTxUrl ? (
+          <a href={tokenTxUrl} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+            VIBECD
+          </a>
+        ) : (
+          <span className="text-blue-600">VIBECD</span>
+        )}{" "}
         is a commemorative memecoin celebrating vibe coding on the Base network.
         <br />
         Claiming does not imply investment value or future returns.

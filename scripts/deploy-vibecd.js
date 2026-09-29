@@ -1,6 +1,6 @@
 /**
  * Hardhat deploy helper (optional). Prefer:
- *   npm run contracts:deploy:base-sepolia
+ *   npm run contracts:deploy:base
  * which uses scripts/compile-vibecd.js --deploy
  */
 const fs = require("fs");
@@ -54,8 +54,8 @@ async function main() {
   console.log("Rewards vault:", ethers.formatEther(rewardsBal), "VIBECD");
 
   const out = {
-    network: "baseSepolia",
-    chainId: 84532,
+    network: "base",
+    chainId: 8453,
     token: tokenAddress,
     claim: dailyAddress,
     dailyClaim: dailyAddress,
@@ -64,7 +64,7 @@ async function main() {
     deployer: deployer.address,
     deployedAt: new Date().toISOString(),
   };
-  const outPath = path.join(__dirname, "..", "contracts", "deployments", "baseSepolia.json");
+  const outPath = path.join(__dirname, "..", "contracts", "deployments", "base.json");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, JSON.stringify(out, null, 2));
   console.log("Wrote", outPath);

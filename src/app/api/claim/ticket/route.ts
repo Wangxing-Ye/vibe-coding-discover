@@ -124,6 +124,6 @@ export async function GET() {
     chainId,
     claimAmount: 10_000,
     dailyGlobalCap: 100_000_000,
-    network: chainId === 84532 ? "Base Sepolia" : "Base",
+    network: chainId === 8453 ? "Base" : `chain ${chainId}`,
   });
 }

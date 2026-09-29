@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Compile VIBECD contracts with solc and optionally deploy to Base Sepolia.
+ * Compile VIBECD contracts with solc and optionally deploy to Base mainnet.
  *
  * Deploy order:
  *   1) VIBECD (80% → daily claim, 20% → rewards) using predicted vault addresses
@@ -9,9 +9,9 @@
  *
  * Usage:
  *   node scripts/compile-vibecd.js
- *   npm run contracts:deploy:base-sepolia
+ *   npm run contracts:deploy:base
  *
- * Requires in .env: DEPLOYER_PRIVATE_KEY (or CLAIM_SIGNER_PRIVATE_KEY) with Base Sepolia ETH.
+ * Requires in .env: DEPLOYER_PRIVATE_KEY (or CLAIM_SIGNER_PRIVATE_KEY) with Base mainnet ETH.
  */
 const fs = require("fs");
 const path = require("path");
@@ -83,21 +83,21 @@ function compile() {
 async function deploy(artifacts) {
   const { createWalletClient, createPublicClient, http, getContractAddress, encodeDeployData } = await import("viem");
   const { privateKeyToAccount } = await import("viem/accounts");
-  const { baseSepolia } = await import("viem/chains");
+  const { base } = await import("viem/chains");
 
   const key = process.env.DEPLOYER_PRIVATE_KEY || process.env.CLAIM_SIGNER_PRIVATE_KEY;
   if (!key) {
     throw new Error(
-      "Set DEPLOYER_PRIVATE_KEY (or CLAIM_SIGNER_PRIVATE_KEY) in .env — the address needs Base Sepolia ETH.",
+      "Set DEPLOYER_PRIVATE_KEY (or CLAIM_SIGNER_PRIVATE_KEY) in .env — the address needs Base mainnet ETH.",
     );
   }
   const normalized = key.startsWith("0x") ? key : `0x${key}`;
   const account = privateKeyToAccount(normalized);
   const signerAddress = process.env.CLAIM_SIGNER_ADDRESS || account.address;
 
-  const transport = http(process.env.BASE_RPC_URL || "https://base-sepolia-rpc.publicnode.com");
-  const publicClient = createPublicClient({ chain: baseSepolia, transport });
-  const walletClient = createWalletClient({ account, chain: baseSepolia, transport });
+  const transport = http(process.env.BASE_RPC_URL || "https://mainnet.base.org");
+  const publicClient = createPublicClient({ chain: base, transport });
+  const walletClient = createWalletClient({ account, chain: base, transport });
 
   const nonce = await publicClient.getTransactionCount({ address: account.address });
   // nonce: token, nonce+1: daily claim, nonce+2: rewards claim
@@ -146,8 +146,8 @@ async function deploy(artifacts) {
   }
 
   const out = {
-    network: "baseSepolia",
-    chainId: 84532,
+    network: "base",
+    chainId: 8453,
     token: tokenAddress,
     claim: dailyAddress,
     dailyClaim: dailyAddress,
@@ -156,7 +156,7 @@ async function deploy(artifacts) {
     deployer: account.address,
     deployedAt: new Date().toISOString(),
   };
-  const outPath = path.join(ROOT, "contracts", "deployments", "baseSepolia.json");
+  const outPath = path.join(ROOT, "contracts", "deployments", "base.json");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, JSON.stringify(out, null, 2));
   console.log("Wrote", outPath);
@@ -166,7 +166,7 @@ async function deploy(artifacts) {
   console.log(`NEXT_PUBLIC_VIBECD_REWARDS_ADDRESS=${rewardsAddress}`);
   console.log(`CLAIM_SIGNER_ADDRESS=${signerAddress}`);
   console.log("CLAIM_SIGNER_PRIVATE_KEY=<signer private key>");
-  console.log("NEXT_PUBLIC_BASE_CHAIN_ID=84532");
+  console.log("NEXT_PUBLIC_BASE_CHAIN_ID=8453");
 }
 
 async function main() {

@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
- * Verify VIBECD + VIBECDDailyClaim + VIBECDRewardsClaim on Base Sepolia (Etherscan API V2).
+ * Verify VIBECD + VIBECDDailyClaim + VIBECDRewardsClaim on Base mainnet (Etherscan API V2).
  *
  * Usage:
- *   npm run contracts:verify:base-sepolia
+ *   npm run contracts:verify:base
  *
  * Requires in .env:
  *   BASESCAN_API_KEY=... or ETHERSCAN_API_KEY=...
- *   (Etherscan API V2 key: https://etherscan.io/apidashboard — works for Base Sepolia via chainid)
+ *   (Etherscan API V2 key: https://etherscan.io/apidashboard — works for Base via chainid)
  *
- * Addresses default from contracts/deployments/baseSepolia.json or NEXT_PUBLIC_VIBECD_*.
+ * Addresses default from contracts/deployments/base.json or NEXT_PUBLIC_VIBECD_*.
  */
 const fs = require("fs");
 const path = require("path");
@@ -18,9 +18,9 @@ const { encodeAbiParameters, parseAbiParameters } = require("viem");
 
 const ROOT = path.join(__dirname, "..");
 const CONTRACTS = path.join(ROOT, "contracts");
-/** Etherscan API V2 (unified); Base Sepolia chain id 84532 */
+/** Etherscan API V2 (unified); Base mainnet chain id 8453 */
 const API_URL = "https://api.etherscan.io/v2/api";
-const CHAIN_ID = "84532";
+const CHAIN_ID = "8453";
 
 try {
   require("dotenv").config({ path: path.join(ROOT, ".env") });
@@ -133,7 +133,7 @@ function buildStandardJson() {
 }
 
 function loadDeployment() {
-  const file = path.join(ROOT, "contracts", "deployments", "baseSepolia.json");
+  const file = path.join(ROOT, "contracts", "deployments", "base.json");
   const fromFile = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : {};
   const token = process.env.NEXT_PUBLIC_VIBECD_TOKEN_ADDRESS || fromFile.token;
   const claim =
@@ -145,7 +145,7 @@ function loadDeployment() {
 
   if (!token || !claim || !rewards || !signer || !owner) {
     throw new Error(
-      "Missing token/claim/rewards/signer/owner. Ensure contracts/deployments/baseSepolia.json exists (with deployer) or set env vars.",
+      "Missing token/claim/rewards/signer/owner. Ensure contracts/deployments/base.json exists (with deployer) or set env vars.",
     );
   }
 
@@ -275,9 +275,9 @@ async function main() {
   });
 
   console.log("\nDone.");
-  console.log(`Token: https://sepolia.basescan.org/address/${token}#code`);
-  console.log(`DailyClaim: https://sepolia.basescan.org/address/${claim}#code`);
-  console.log(`RewardsClaim: https://sepolia.basescan.org/address/${rewards}#code`);
+  console.log(`Token: https://basescan.org/address/${token}#code`);
+  console.log(`DailyClaim: https://basescan.org/address/${claim}#code`);
+  console.log(`RewardsClaim: https://basescan.org/address/${rewards}#code`);
 }
 
 main().catch((err) => {
