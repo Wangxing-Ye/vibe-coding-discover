@@ -1,4 +1,4 @@
-vibecodingdiscover.com {
+vibecodingdiscover.com, www.vibecodingdiscover.com {
   encode gzip zstd
   reverse_proxy localhost:3000 {
     header_up X-Real-IP {remote_host}
