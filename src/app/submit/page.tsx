@@ -162,7 +162,10 @@ function SubmitForm({
               ))}
             </ul>
           ) : null}
-          {!state.published ? <p className="text-secondary">It is not published.</p> : null}
+          {!state.published &&
+          !/not an AI-focused|waiting for admin review|All not AI-focused/i.test(state.message) ? (
+            <p className="text-secondary">It is not published.</p>
+          ) : null}
         </div>
       ) : null}
       {state.status === "error" ? <p className="mt-3 text-sm text-error">{state.message}</p> : null}

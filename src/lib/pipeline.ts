@@ -27,6 +27,8 @@ export type CuratedAnalysis = {
 
 export const OUT_OF_CATALOG_NOTE =
   "Out of catalog: not an AI/Agent/MCP/RAG/Skills/Framework project.";
+/** Public submit copy for the same case. */
+export const NOT_AI_FOCUSED_MESSAGE = "Not an AI-focused project.";
 
 export const AI_ANALYSIS_FAILED_NOTE =
   "AI analysis failed. The project is in draft until an editor reviews it.";
@@ -342,6 +344,7 @@ export type ProcessResult = {
   newlyPublishedCount?: number;
   alreadyPublishedCount?: number;
   reviewCount?: number;
+  outOfScopeCount?: number;
   message: string;
 };
 
@@ -349,22 +352,33 @@ function publishedSlugsOf(item: ProcessResult) {
   return item.slugs?.length ? item.slugs : item.slug ? [item.slug] : [];
 }
 
+function notAiFocusedLabel(count: number) {
+  return count === 1 ? "1 not an AI-focused project" : `${count} not an AI-focused project`;
+}
+
 function formatRepoOutcomeMessage(
   found: number,
   newlyCount: number,
   alreadyCount: number,
   reviewCount: number,
+  outOfScopeCount: number,
 ) {
   const foundLabel = found === 1 ? "repository" : "repositories";
-  if (reviewCount === 0 && newlyCount > 0 && alreadyCount === 0) {
+  if (reviewCount === 0 && outOfScopeCount === 0 && newlyCount > 0 && alreadyCount === 0) {
     return `Found ${found} ${foundLabel}. All newly published.`;
   }
-  if (reviewCount === 0 && alreadyCount > 0 && newlyCount === 0) {
+  if (reviewCount === 0 && outOfScopeCount === 0 && alreadyCount > 0 && newlyCount === 0) {
     return `Found ${found} ${foundLabel}. All already on the site.`;
+  }
+  if (newlyCount === 0 && alreadyCount === 0 && reviewCount === 0 && outOfScopeCount === found && found > 0) {
+    return found === 1
+      ? `Found 1 repository. ${NOT_AI_FOCUSED_MESSAGE}`
+      : `Found ${found} repositories. All not AI-focused projects.`;
   }
   const parts: string[] = [];
   if (newlyCount > 0) parts.push(`${newlyCount} newly published`);
   if (alreadyCount > 0) parts.push(`${alreadyCount} already on the site`);
+  if (outOfScopeCount > 0) parts.push(notAiFocusedLabel(outOfScopeCount));
   if (reviewCount > 0) parts.push(`${reviewCount} waiting for admin review`);
   return `Found ${found} ${foundLabel}. ${parts.join(", ")}.`;
 }
@@ -405,6 +419,7 @@ async function alreadyPublishedResult(
     newlyPublishedCount: 0,
     alreadyPublishedCount: 1,
     reviewCount: 0,
+    outOfScopeCount: 0,
     found: 1,
     message: "This project is already published.",
   };
@@ -445,6 +460,7 @@ async function ingestKnownGithub(submissionId: string, githubUrl: string): Promi
       published: false,
       publishedCount: 0,
       reviewCount: 1,
+      outOfScopeCount: 0,
       found: 1,
       message: notes,
     };
@@ -470,9 +486,10 @@ async function ingestKnownGithub(submissionId: string, githubUrl: string): Promi
       slugs: [project.slug],
       published: false,
       publishedCount: 0,
-      reviewCount: 1,
+      reviewCount: 0,
+      outOfScopeCount: 1,
       found: 1,
-      message: OUT_OF_CATALOG_NOTE,
+      message: NOT_AI_FOCUSED_MESSAGE,
     };
   }
 
@@ -498,6 +515,7 @@ async function ingestKnownGithub(submissionId: string, githubUrl: string): Promi
       published: false,
       publishedCount: 0,
       reviewCount: 1,
+      outOfScopeCount: 0,
       found: 1,
       message: `Analyzed, but it needs at least ${SUBMIT_MIN_STARS} stars to publish automatically. It is waiting for admin review.`,
     };
@@ -538,6 +556,7 @@ async function ingestKnownGithub(submissionId: string, githubUrl: string): Promi
     newlyPublishedCount: 1,
     alreadyPublishedCount: 0,
     reviewCount: 0,
+    outOfScopeCount: 0,
     found: 1,
     message: "Analyzed and published.",
   };
@@ -591,19 +610,27 @@ async function processMultiGithubSource(
   const newlyPublishedCount = newlyPublishedSlugs.length;
   const alreadyPublishedCount = alreadyPublishedSlugs.length;
   const publishedCount = newlyPublishedCount + alreadyPublishedCount;
-  const reviewCount = results.length - publishedCount;
+  const outOfScopeCount = results.reduce(
+    (count, item) => count + (item.outOfScopeCount ?? 0),
+    0,
+  );
+  const reviewCount = Math.max(0, results.length - publishedCount - outOfScopeCount);
   const message = formatRepoOutcomeMessage(
     githubUrls.length,
     newlyPublishedCount,
     alreadyPublishedCount,
     reviewCount,
+    outOfScopeCount,
   );
   const notes = [`Found ${githubUrls.length} GitHub repositories.`, ...githubUrls, message].join("\n");
 
   await prisma.submission.update({
     where: { id: submissionId },
     data: {
-      status: publishedCount > 0 && reviewCount === 0 ? SubmissionStatus.published : SubmissionStatus.needs_review,
+      status:
+        publishedCount > 0 && reviewCount === 0 && outOfScopeCount === 0
+          ? SubmissionStatus.published
+          : SubmissionStatus.needs_review,
       githubUrl: null,
       reviewedAt: new Date(),
       notes,
@@ -621,6 +648,7 @@ async function processMultiGithubSource(
     newlyPublishedCount,
     alreadyPublishedCount,
     reviewCount,
+    outOfScopeCount,
     message,
   };
 }
@@ -683,7 +711,7 @@ export async function processSubmission(submissionId: string): Promise<ProcessRe
         notes,
       },
     });
-    return { published: false, message: notes };
+    return { published: false, reviewCount: 1, outOfScopeCount: 0, message: notes };
   }
 }
 

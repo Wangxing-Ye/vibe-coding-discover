@@ -42,13 +42,14 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
   const { connectors, connectAsync, isPending: isConnecting } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChainAsync } = useSwitchChain();
-  const { writeContractAsync, data: txHash, isPending: isWriting } = useWriteContract();
+  const { writeContractAsync, data: txHash, isPending: isWriting, reset: resetWrite } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: txHash });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [status, setStatus] = useState<RewardsStatus | null>(null);
   const [pendingConfirm, setPendingConfirm] = useState<{ wallet: string; nonce: string } | null>(null);
+  const [hidePendingAfterClaim, setHidePendingAfterClaim] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
 
   const rewardsAddress = process.env.NEXT_PUBLIC_VIBECD_REWARDS_ADDRESS as `0x${string}` | undefined;
@@ -68,24 +69,49 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
 
   useEffect(() => {
     void refreshStatus();
-  }, [refreshStatus, isSuccess, refreshKey]);
+  }, [refreshStatus, refreshKey]);
+
+  useEffect(() => {
+    setHidePendingAfterClaim(false);
+  }, [refreshKey]);
 
   useEffect(() => {
     if (!isSuccess || !pendingConfirm) return;
+    setHidePendingAfterClaim(true);
     const { wallet, nonce } = pendingConfirm;
+    let cancelled = false;
     void (async () => {
       try {
-        await fetch("/api/rewards/confirm", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ wallet, nonce }),
-        });
+        let confirmed = false;
+        for (let attempt = 0; attempt < 12; attempt += 1) {
+          const res = await fetch("/api/rewards/confirm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ wallet, nonce }),
+          });
+          if (res.ok) {
+            confirmed = true;
+            break;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          if (cancelled) return;
+        }
+        if (!confirmed || cancelled) return;
         await refreshStatus();
+        resetWrite();
       } finally {
-        setPendingConfirm(null);
+        if (!cancelled) setPendingConfirm(null);
       }
     })();
-  }, [isSuccess, pendingConfirm, refreshStatus]);
+    return () => {
+      cancelled = true;
+    };
+  }, [isSuccess, pendingConfirm, refreshStatus, resetWrite]);
+
+  useEffect(() => {
+    if (!hidePendingAfterClaim || pendingConfirm) return;
+    if ((status?.pendingCount ?? -1) === 0) setHidePendingAfterClaim(false);
+  }, [hidePendingAfterClaim, pendingConfirm, status?.pendingCount]);
 
   useEffect(() => {
     if (!pickerOpen) return;
@@ -163,8 +189,8 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
     [connectAsync],
   );
 
-  const pendingAmount = status?.pendingAmount ?? 0;
-  const pendingCount = status?.pendingCount ?? 0;
+  const pendingAmount = hidePendingAfterClaim ? 0 : (status?.pendingAmount ?? 0);
+  const pendingCount = hidePendingAfterClaim ? 0 : (status?.pendingCount ?? 0);
 
   return (
     <section className="mt-10 rounded-2xl border border-border px-6 py-8 text-center">

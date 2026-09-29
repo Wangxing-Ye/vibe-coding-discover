@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
         newlyPublishedCount: 0,
         alreadyPublishedCount: 1,
         reviewCount: 0,
+        outOfScopeCount: 0,
       });
     }
     const processed = await processSubmission(result.submissionId);
@@ -73,6 +74,7 @@ export async function POST(request: NextRequest) {
       newlyPublishedCount: processed.newlyPublishedCount,
       alreadyPublishedCount: processed.alreadyPublishedCount,
       reviewCount: processed.reviewCount,
+      outOfScopeCount: processed.outOfScopeCount,
       submissionId: result.submissionId,
     });
   } catch (error) {
