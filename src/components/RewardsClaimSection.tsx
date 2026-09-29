@@ -10,7 +10,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { base } from "wagmi/chains";
-import { basescanTokenTxUrl } from "@/lib/base-chain";
+import { basescanTokenUrl } from "@/lib/base-chain";
 import { rewardsAbi } from "@/lib/rewards";
 import { buildWalletMenuRows, formatWalletError, type WalletMenuRow } from "@/lib/wallet-menu";
 
@@ -54,7 +54,7 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
   const rewardsAddress = process.env.NEXT_PUBLIC_VIBECD_REWARDS_ADDRESS as `0x${string}` | undefined;
   const tokenAddress = process.env.NEXT_PUBLIC_VIBECD_TOKEN_ADDRESS as `0x${string}` | undefined;
   const configured = Boolean(rewardsAddress && tokenAddress);
-  const tokenTxUrl = tokenAddress ? basescanTokenTxUrl(tokenAddress) : undefined;
+  const tokenTxUrl = tokenAddress ? basescanTokenUrl(tokenAddress) : undefined;
 
   const refreshStatus = useCallback(async () => {
     try {

@@ -10,6 +10,10 @@ export function baseRpcUrl() {
   return process.env.BASE_RPC_URL || process.env.NEXT_PUBLIC_BASE_RPC_URL || BASE_RPC_FALLBACK;
 }
 
-export function basescanTokenTxUrl(tokenAddress: string) {
-  return `${BASESCAN_ORIGIN}/token/${tokenAddress}#transactions`;
+export function basescanTokenUrl(tokenAddress: string) {
+  return `${BASESCAN_ORIGIN}/token/${tokenAddress}`;
+}
+
+export function basescanAddressUrl(address: string) {
+  return `${BASESCAN_ORIGIN}/address/${address}`;
 }

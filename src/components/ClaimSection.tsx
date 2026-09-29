@@ -10,7 +10,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { base } from "wagmi/chains";
-import { basescanTokenTxUrl } from "@/lib/base-chain";
+import { basescanTokenUrl } from "@/lib/base-chain";
 import { claimAbi } from "@/lib/claim";
 import { buildWalletMenuRows, formatWalletError, type WalletMenuRow } from "@/lib/wallet-menu";
 
@@ -152,7 +152,7 @@ export function ClaimSection() {
       <h2 className="mt-2 text-xl font-semibold tracking-tight">
         {tokenAddress ? (
           <a
-            href={basescanTokenTxUrl(tokenAddress)}
+            href={basescanTokenUrl(tokenAddress)}
             target="_blank"
             rel="noreferrer"
             className="text-blue-600 hover:underline"

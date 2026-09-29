@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SITE_NAME } from "@/lib/site";
+import { basescanAddressUrl, basescanTokenUrl } from "@/lib/base-chain";
+import { claimAddresses } from "@/lib/claim";
 
 export const metadata: Metadata = {
   title: "Terms & Privacy",
@@ -9,10 +11,15 @@ export const metadata: Metadata = {
 };
 
 export default function TermsPage() {
+  const fromEnv = claimAddresses();
+  const token = fromEnv.token || "0x848fa60cc5652d38c8ab61700964d8ba6682dae1";
+  const claim = fromEnv.claim || "0xfef6a0f15e3783540df1f58f4bcd7a7e28751ec6";
+  const rewards = fromEnv.rewards || "0x11bde142c37f76b41ff3b2bf5db96f552d427578";
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <h1 className="text-3xl font-semibold tracking-tight">Terms & Privacy</h1>
-      <p className="mt-3 text-sm text-secondary">Last updated: September 22, 2026</p>
+      <p className="mt-3 text-sm text-secondary">Last updated: September 29, 2026</p>
       <p className="mt-6 text-[15px] leading-7 text-secondary">
         These Terms of Use and this Privacy Policy apply to {SITE_NAME} (the “Service”). By using the
         Service—including browsing project pages, submitting a repository, X post, or YouTube video,
@@ -126,6 +133,51 @@ export default function TermsPage() {
                 <th className="py-1.5 pr-4 text-right font-normal text-foreground">Global daily cap: </th>
                 <td className="py-1.5">100,000,000 VIBECD (daily claim vault).</td>
               </tr>
+              {token ? (
+                <tr>
+                  <th className="py-1.5 pr-4 align-top text-right font-normal text-foreground">Token: </th>
+                  <td className="py-1.5 break-all">
+                    <a
+                      href={basescanTokenUrl(token)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-accent hover:underline"
+                    >
+                      {token}
+                    </a>
+                  </td>
+                </tr>
+              ) : null}
+              {claim ? (
+                <tr>
+                  <th className="py-1.5 pr-4 align-top text-right font-normal text-foreground">Daily claim: </th>
+                  <td className="py-1.5 break-all">
+                    <a
+                      href={basescanAddressUrl(claim)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-accent hover:underline"
+                    >
+                      {claim}
+                    </a>
+                  </td>
+                </tr>
+              ) : null}
+              {rewards ? (
+                <tr>
+                  <th className="py-1.5 pr-4 align-top text-right font-normal text-foreground">Rewards claim: </th>
+                  <td className="py-1.5 break-all">
+                    <a
+                      href={basescanAddressUrl(rewards)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-accent hover:underline"
+                    >
+                      {rewards}
+                    </a>
+                  </td>
+                </tr>
+              ) : null}
             </tbody>
           </table>
           <p>Days are measured in UTC.</p>
@@ -134,8 +186,7 @@ export default function TermsPage() {
             Claiming VIBECD is free. You pay the network gas fee for the on-chain transaction; we do
             not charge a claim fee. We may refuse, pause, or change claim availability for
             operational, security, or abuse reasons. Smart contracts and network conditions can
-            fail; claimed tokens may be lost or unusable if you interact incorrectly or if the test
-            network resets.
+            fail; claimed tokens may be lost or unusable if you interact incorrectly.
           </p>
           <p className="text-foreground">
             This is not financial advice. Claiming does not imply investment value or future returns.
