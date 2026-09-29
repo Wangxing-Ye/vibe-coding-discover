@@ -1,20 +1,16 @@
 import { ProjectStatus } from "@prisma/client";
+import { isSameUtcDay, startOfTodayUtc } from "./catalog-day";
 import { prisma } from "./db";
 
 export type RecommendationSource = "github" | "x" | "trending" | "submit" | "admin" | "watchlist";
 
-/** Local calendar date at midnight (matches homepage "Today"). */
+/** UTC calendar date at midnight (matches homepage “Today” and VIBECD claim days). */
 export function todayLocalDate() {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return startOfTodayUtc();
 }
 
 export function isSameLocalDay(value: Date, day = todayLocalDate()) {
-  return (
-    value.getFullYear() === day.getFullYear() &&
-    value.getMonth() === day.getMonth() &&
-    value.getDate() === day.getDate()
-  );
+  return isSameUtcDay(value, day);
 }
 
 /**

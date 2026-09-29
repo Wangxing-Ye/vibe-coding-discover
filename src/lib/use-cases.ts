@@ -163,10 +163,7 @@ export async function getAllUseCases(query?: string): Promise<UseCaseWithCount[]
   return result.items;
 }
 
-export function startOfTodayLocal() {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-}
+export { startOfTodayLocal, startOfTodayUtc } from "./catalog-day";
 
 export async function getUseCasesPage(options: {
   query?: string;

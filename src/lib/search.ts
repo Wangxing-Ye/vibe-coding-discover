@@ -54,7 +54,7 @@ export async function countProjects(
   return prisma.project.count({ where: projectSearchWhere(options) });
 }
 
-/** Published projects whose record was created since local midnight. */
+/** Published projects whose record was created since UTC midnight. */
 export async function countPublishedProjectsAddedToday(since: Date) {
   return prisma.project.count({
     where: {

@@ -9,24 +9,13 @@ import { CATEGORIES } from "@/lib/categories";
 import { getCategoryCounts, getRecentlyAdded, getTrending, countProjects, countPublishedProjectsAddedToday } from "@/lib/search";
 import { SITE_DESCRIPTION } from "@/lib/site";
 import { getTodayRecommendations } from "@/lib/today-recommendation";
+import { formatUtcMmDdYyyy, startOfTodayUtc } from "@/lib/catalog-day";
 import { countUseCases, countUseCasesAddedToday, getTopUseCases } from "@/lib/use-cases";
 
 export const dynamic = "force-dynamic";
 
-function startOfTodayLocal() {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-}
-
-function formatMmDdYyyy(date: Date) {
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-  const yyyy = date.getFullYear();
-  return `${mm}/${dd}/${yyyy}`;
-}
-
 export default async function HomePage() {
-  const todayStart = startOfTodayLocal();
+  const todayStart = startOfTodayUtc();
   const [trending, recent, todayRecs, counts, topUseCases, publishedCount, useCaseCount, todayProjects, todayUseCases] =
     await Promise.all([
       getTrending(8),
@@ -53,7 +42,7 @@ export default async function HomePage() {
           <SearchBox placeholder={`Search ${publishedCount.toLocaleString()} projects...`} />
         </div>
         <p className="mt-3 text-sm text-accent">
-          Today ({formatMmDdYyyy(todayStart)}):{" "}
+          Today ({formatUtcMmDdYyyy(todayStart)} UTC):{" "}
           <Link href="/explore?period=today" className="hover:underline">
             +{todayProjects.toLocaleString()} projects
           </Link>

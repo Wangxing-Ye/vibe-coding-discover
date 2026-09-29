@@ -54,7 +54,7 @@ Every analyzed project gets **one** catalog category. The set is a Prisma enum (
 - **Most specific wins.** A coding agent is `AI_CODING`, not `AI_AGENTS`. An MCP server is `MCP`, not `AI_TOOLS`.
 - **In-scope is separate.** `in_scope` decides auto-publish. Category is always filled so admin can sort rejects.
 - **Published lists only.** Category pages and homepage counts are `status = published`.
-- **Today is created today.** `?period=today` filters `createdAt` from local midnight (same as Explore / Use Cases).
+- **Today is UTC.** `?period=today` filters `createdAt` from UTC midnight (same as Explore / Use Cases and VIBECD claim days).
 
 
 
