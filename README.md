@@ -15,6 +15,7 @@ AI-native discovery layer for open source. Discover and analyze open-source AI â
 ```bash
 cp .env.example .env
 docker compose up -d postgres
+# Host access to that Postgres needs a compose override: ports: ["127.0.0.1:5432:5432"]
 npx prisma migrate dev
 npm run import:projects
 npm run dev
@@ -96,7 +97,7 @@ npm run import:projects -- --live --ai   # refresh GitHub + AI analysis
 1. Copy `.env.example` to `.env` and fill secrets (including `NEXT_PUBLIC_VIBECD_*`).
 2. `docker compose --profile app up -d --build` â€” `NEXT_PUBLIC_*` are baked in at image build; changing them later needs another `--build`.
 3. Point DNS to the VPS and use [deploy/Caddyfile](deploy/Caddyfile) for HTTPS.
-4. Cron daily: `scripts/backup.sh`
+4. Cron daily: dump via `docker compose --profile app exec -T postgres pg_dump -U vibe vibecodingdiscover` (host `5432` is not published).
 
 KPI events: `project_view`, `github_click`, `search_query`.
 

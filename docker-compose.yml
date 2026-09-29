@@ -17,8 +17,9 @@ services:
       POSTGRES_USER: vibe
       POSTGRES_PASSWORD: vibe
       POSTGRES_DB: vibecodingdiscover
-    ports:
-      - "5432:5432"
+    # No host port: web/worker use the compose network (postgres:5432).
+    # Local host tools: add docker-compose.override.yml with
+    #   ports: ["127.0.0.1:5432:5432"]
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -32,7 +33,7 @@ services:
       context: .
       args: *next-public-build-args
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     env_file: .env
     environment:
       DATABASE_URL: postgresql://vibe:vibe@postgres:5432/vibecodingdiscover
