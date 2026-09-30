@@ -180,6 +180,14 @@ export default function TermsPage() {
               ) : null}
             </tbody>
           </table>
+          <p>
+            The entire fixed supply was minted at deployment to the Daily Claim and Rewards Claim
+            contracts (80% / 20%). There is no team, founder, or creator allocation. The token
+            contract cannot mint more VIBECD. Anyone—including the deployer—can receive VIBECD from
+            those vaults only through the same public paths: the daily claim, or rewards for newly
+            published AI open-source submissions. Claimed tokens may still be transferred between
+            wallets on Base.
+          </p>
           <p>Days are measured in UTC.</p>
           <p>
             Claims require connecting a compatible wallet and completing an on-chain transaction.

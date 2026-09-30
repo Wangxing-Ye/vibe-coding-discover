@@ -23,8 +23,23 @@ type TicketResponse = {
   chainId?: number;
 };
 
+const FALLBACK_TOKEN_ADDRESS = "0x848fa60cc5652d38c8ab61700964d8ba6682dae1";
+
 function shortAddress(value: string) {
   return `${value.slice(0, 6)}…${value.slice(-4)}`;
+}
+
+function CopyIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2" />
+      <path
+        d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+    </svg>
+  );
 }
 
 export function ClaimSection() {
@@ -37,11 +52,13 @@ export function ClaimSection() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
 
   const claimAddress = process.env.NEXT_PUBLIC_VIBECD_CLAIM_ADDRESS as `0x${string}` | undefined;
-  const tokenAddress = process.env.NEXT_PUBLIC_VIBECD_TOKEN_ADDRESS as `0x${string}` | undefined;
-  const configured = Boolean(claimAddress && tokenAddress);
+  const tokenFromEnv = process.env.NEXT_PUBLIC_VIBECD_TOKEN_ADDRESS as `0x${string}` | undefined;
+  const tokenAddress = (tokenFromEnv || FALLBACK_TOKEN_ADDRESS) as `0x${string}`;
+  const configured = Boolean(claimAddress && tokenFromEnv);
 
   const menuRows = useMemo(() => buildWalletMenuRows(connectors), [connectors]);
 
@@ -98,6 +115,16 @@ export function ClaimSection() {
     },
     [connectAsync],
   );
+
+  const copyTokenAddress = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(tokenAddress);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError("Could not copy token address.");
+    }
+  }, [tokenAddress]);
 
   const onClaim = useCallback(async () => {
     setError(null);
@@ -163,6 +190,26 @@ export function ClaimSection() {
           <span className="text-blue-600">VIBECD</span>
         )}
       </h2>
+      <div className="mx-auto mt-1 flex max-w-xl items-center justify-center gap-1.5 px-2">
+        <a
+          href={basescanTokenUrl(tokenAddress)}
+          target="_blank"
+          rel="noreferrer"
+          className="break-all font-mono text-sm leading-6 text-secondary hover:text-foreground hover:underline"
+        >
+          {tokenAddress}
+        </a>
+        <button
+          type="button"
+          onClick={() => void copyTokenAddress()}
+          className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-secondary transition-colors hover:bg-[#f4f4f5] hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+          aria-label={copied ? "Token address copied" : "Copy token address"}
+          title={copied ? "Copied" : "Copy"}
+        >
+          <CopyIcon />
+        </button>
+      </div>
+      {copied ? <p className="mt-1 text-xs text-success">Copied</p> : null}
       <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-secondary">
         VIBECD is a commemorative memecoin celebrating vibe coding on the Base network.
       </p>
