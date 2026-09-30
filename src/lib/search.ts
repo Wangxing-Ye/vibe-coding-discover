@@ -90,10 +90,15 @@ export async function getRecentlyAdded(take = 6) {
   });
 }
 
-export async function getCategoryCounts() {
+export async function getCategoryCounts(options: { createdSince?: Date } = {}) {
   const grouped = await prisma.projectAnalysis.groupBy({
     by: ["category"],
-    where: { project: { status: ProjectStatus.published } },
+    where: {
+      project: {
+        status: ProjectStatus.published,
+        ...(options.createdSince ? { createdAt: { gte: options.createdSince } } : {}),
+      },
+    },
     _count: { category: true },
   });
   return Object.fromEntries(grouped.map((row) => [row.category, row._count.category])) as Partial<

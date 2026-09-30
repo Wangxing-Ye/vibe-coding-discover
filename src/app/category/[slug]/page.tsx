@@ -8,8 +8,10 @@ import { ExploreViewToggle } from "@/components/ExploreViewToggle";
 import { PAGE_SIZE, PaginationBar, parsePage, totalPages } from "@/components/PaginationBar";
 import { ProjectGrid } from "@/components/ProjectCard";
 import { ProjectListTable } from "@/components/ProjectListTable";
+import { ExportProjectsButton } from "@/components/ExportProjectsButton";
 import { getCategoryBySlug } from "@/lib/categories";
-import { countProjects, searchProjects } from "@/lib/search";
+import { buildTodayTxtIntro, projectsToExportRows } from "@/lib/export-projects-csv";
+import { countProjects, getCategoryCounts, searchProjects } from "@/lib/search";
 import { startOfTodayLocal } from "@/lib/use-cases";
 
 export const dynamic = "force-dynamic";
@@ -47,7 +49,10 @@ export default async function CategoryPage({
   const period = query.period === "today" ? "today" : "all";
   const createdSince = period === "today" ? startOfTodayLocal() : undefined;
 
-  const total = await countProjects({ category: category.id, createdSince });
+  const [total, todayCounts] = await Promise.all([
+    countProjects({ category: category.id, createdSince }),
+    period === "today" ? getCategoryCounts({ createdSince }) : Promise.resolve(undefined),
+  ]);
   const pages = totalPages(total);
   const page = Math.min(parsePage(query.page), pages);
   const projects = await searchProjects({
@@ -57,6 +62,7 @@ export default async function CategoryPage({
     take: PAGE_SIZE,
     skip: (page - 1) * PAGE_SIZE,
   });
+  const txtIntro = todayCounts ? buildTodayTxtIntro(todayCounts) : undefined;
 
   function href(next: { page?: number; period?: "all" | "today" }) {
     const nextParams = new URLSearchParams();
@@ -116,6 +122,7 @@ export default async function CategoryPage({
               Today
             </Link>
           </div>
+          <ExportProjectsButton rows={projectsToExportRows(projects)} txtIntro={txtIntro} />
         </div>
       </div>
       <div className="mt-6">
