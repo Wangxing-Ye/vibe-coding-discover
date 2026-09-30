@@ -106,3 +106,7 @@ KPI events: `project_view`, `github_click`, `search_query`.
 VIBECD is a commemorative memecoin for vibe coding. It is not a security, an investment product, or a guarantee of any economic benefit.
 
 Daily claim and submission rewards are on the homepage and Submit page. Compile and deploy from **[contracts/README.md](contracts/README.md)**.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
