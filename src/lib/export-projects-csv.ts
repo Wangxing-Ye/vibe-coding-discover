@@ -105,9 +105,12 @@ export function buildProjectsTxt(rows: ExportProjectRow[], origin: string, intro
   const body = rows
     .map((row, index) => {
       const summary = row.summary.replace(/\s+/g, " ").trim();
-      return [`#${index + 1} ${row.name}   ${projectPageUrl(origin, row.slug)}`, `Stars: ${row.stars} ${row.category}`, summary].join(
-        "\n",
-      );
+      return [
+        `#${index + 1} ${row.name}   ${projectPageUrl(origin, row.slug)}`,
+        `Stars: ${row.stars}`,
+        `Category: ${row.category}`,
+        summary,
+      ].join("\n");
     })
     .join("\n\n");
   if (!intro) return body;
