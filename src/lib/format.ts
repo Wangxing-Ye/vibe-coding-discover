@@ -52,3 +52,14 @@ export function formatUpdatedAt(date: Date) {
     minute: "2-digit",
   }).format(date);
 }
+
+export function formatUpdatedAtUtc(date: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "UTC",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}

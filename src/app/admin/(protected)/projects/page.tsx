@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { Category, ProjectStatus, type Prisma } from "@prisma/client";
 import { AdminProjectFilters } from "@/app/admin/ProjectFilters";
-import { parseMmDdYyyyLocalDay } from "@/lib/catalog-day";
+import { formatUtcMmDdYyyy, parseMmDdYyyyUtcDay } from "@/lib/catalog-day";
 import { CATEGORY_IDS, categoryLabel } from "@/lib/categories";
 import { prisma } from "@/lib/db";
-import { buildTodayTxtIntro, categoryCountsFromProjects, formatLocalMmDdYyyy, projectsToExportRows } from "@/lib/export-projects-csv";
-import { formatUpdatedAt } from "@/lib/format";
+import { buildTodayTxtIntro, categoryCountsFromProjects, projectsToExportRows } from "@/lib/export-projects-csv";
+import { formatUpdatedAt, formatUpdatedAtUtc } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +39,7 @@ export default async function AdminProjectsPage({
   const params = await searchParams;
   const q = params.q?.trim() || "";
   const updated = params.updated?.trim() || "";
-  const updatedDay = parseMmDdYyyyLocalDay(updated);
+  const updatedDay = parseMmDdYyyyUtcDay(updated);
   const status = params.status && STATUSES.has(params.status) ? (params.status as ProjectStatus) : undefined;
   const category = params.category && CATEGORIES.has(params.category) ? (params.category as Category) : undefined;
   const license = params.license && LICENSES.has(params.license) ? params.license : "";
@@ -91,7 +91,7 @@ export default async function AdminProjectsPage({
         txtIntro={
           updatedDay
             ? buildTodayTxtIntro(categoryCountsFromProjects(projects), {
-                dateLabel: formatLocalMmDdYyyy(updatedDay.start),
+                dateLabel: formatUtcMmDdYyyy(updatedDay.start),
               })
             : undefined
         }
@@ -108,13 +108,14 @@ export default async function AdminProjectsPage({
               <th className="px-4 py-3 font-medium">Stars</th>
               <th className="px-4 py-3 font-medium">License</th>
               <th className="px-4 py-3 font-medium">Updated</th>
+              <th className="px-4 py-3 font-medium">Updated UTC</th>
               <th className="px-4 py-3 font-medium">Status</th>
             </tr>
           </thead>
           <tbody>
             {projects.length === 0 ? (
               <tr>
-                <td className="px-4 py-6 text-secondary" colSpan={6}>
+                <td className="px-4 py-6 text-secondary" colSpan={7}>
                   No projects match these filters.
                 </td>
               </tr>
@@ -132,6 +133,7 @@ export default async function AdminProjectsPage({
                   <td className="px-4 py-3 text-secondary">{project.stars.toLocaleString()}</td>
                   <td className="px-4 py-3 text-secondary">{project.license || "—"}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-secondary">{formatUpdatedAt(project.updatedAt)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-secondary">{formatUpdatedAtUtc(project.updatedAt)}</td>
                   <td className="px-4 py-3 text-secondary">{project.status}</td>
                 </tr>
               ))

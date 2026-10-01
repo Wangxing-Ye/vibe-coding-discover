@@ -63,12 +63,12 @@ export function AdminProjectFilters({
         <input
           name="updated"
           defaultValue={updated}
-          placeholder="MM/DD/YYYY"
-          aria-label="Updated Date"
-          title="Updated Date (MM/DD/YYYY, empty for all time)"
+          placeholder="MM/DD/YYYY UTC"
+          aria-label="Updated Date UTC"
+          title="Updated Date UTC (MM/DD/YYYY, empty for all time)"
           inputMode="numeric"
           autoComplete="off"
-          className={`${fieldClass} w-[8.5rem]`}
+          className={`${fieldClass} w-[10.5rem]`}
         />
         <select
           name="status"
