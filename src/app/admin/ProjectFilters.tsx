@@ -1,6 +1,8 @@
 "use client";
 
+import { ExportProjectsButton } from "@/components/ExportProjectsButton";
 import { CATEGORIES } from "@/lib/categories";
+import type { ExportProjectRow } from "@/lib/export-projects-csv";
 import { ReanalyzeAllButton } from "@/app/admin/ReanalyzeAllButton";
 
 const STATUSES = [
@@ -30,16 +32,22 @@ const LICENSES = [
 
 export function AdminProjectFilters({
   q,
+  updated,
   status,
   category,
   license,
   order,
+  exportRows,
+  txtIntro,
 }: {
   q: string;
+  updated: string;
   status: string;
   category: string;
   license: string;
   order: string;
+  exportRows: ExportProjectRow[];
+  txtIntro?: string;
 }) {
   const fieldClass = "h-11 rounded-xl border border-border bg-background px-3 text-sm outline-none focus:border-accent";
 
@@ -51,6 +59,16 @@ export function AdminProjectFilters({
           defaultValue={q}
           placeholder="Search by name"
           className={`${fieldClass} w-full min-w-[16rem] sm:w-64`}
+        />
+        <input
+          name="updated"
+          defaultValue={updated}
+          placeholder="MM/DD/YYYY"
+          aria-label="Updated Date"
+          title="Updated Date (MM/DD/YYYY, empty for all time)"
+          inputMode="numeric"
+          autoComplete="off"
+          className={`${fieldClass} w-[8.5rem]`}
         />
         <select
           name="status"
@@ -108,7 +126,10 @@ export function AdminProjectFilters({
           Search
         </button>
       </form>
-      <ReanalyzeAllButton />
+      <div className="flex flex-wrap items-center gap-2">
+        <ReanalyzeAllButton />
+        <ExportProjectsButton rows={exportRows} txtIntro={txtIntro} />
+      </div>
     </div>
   );
 }

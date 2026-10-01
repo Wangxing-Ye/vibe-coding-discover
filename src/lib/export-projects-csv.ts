@@ -51,9 +51,31 @@ function joinWithAnd(parts: string[]) {
   return `${parts.slice(0, -1).join(", ")}, and ${parts[parts.length - 1]}`;
 }
 
-export function buildTodayTxtIntro(counts: Partial<Record<Category, number>>, now = new Date()) {
+export function categoryCountsFromProjects(projects: ProjectWithAnalysis[]) {
+  const counts: Partial<Record<Category, number>> = {};
+  for (const project of projects) {
+    if (!project.analysis) continue;
+    const id = project.analysis.category;
+    counts[id] = (counts[id] ?? 0) + 1;
+  }
+  return counts;
+}
+
+export function formatLocalMmDdYyyy(date: Date) {
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${mm}/${dd}/${date.getFullYear()}`;
+}
+
+export function buildTodayTxtIntro(
+  counts: Partial<Record<Category, number>>,
+  nowOrOptions?: Date | { now?: Date; dateLabel?: string },
+) {
+  const options = nowOrOptions instanceof Date ? { now: nowOrOptions } : (nowOrOptions ?? {});
+  const now = options.now ?? new Date();
+  const dateLabel = options.dateLabel ?? utcYyyyMmDd(now);
   const total = TODAY_INTRO_CATEGORY_ORDER.reduce((sum, id) => sum + (counts[id] ?? 0), 0);
-  const headline = `Today (${utcYyyyMmDd(now)} UTC), ${total} AI open source ${
+  const headline = `Today (${dateLabel} UTC), ${total} AI open source ${
     total === 1 ? "project was" : "projects were"
   } discovered and analyzed.`;
   const parts = TODAY_INTRO_CATEGORY_ORDER.flatMap((id) => {

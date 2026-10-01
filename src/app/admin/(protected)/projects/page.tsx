@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Category, ProjectStatus, type Prisma } from "@prisma/client";
 import { AdminProjectFilters } from "@/app/admin/ProjectFilters";
+import { parseMmDdYyyyLocalDay } from "@/lib/catalog-day";
 import { CATEGORY_IDS, categoryLabel } from "@/lib/categories";
 import { prisma } from "@/lib/db";
+import { buildTodayTxtIntro, categoryCountsFromProjects, formatLocalMmDdYyyy, projectsToExportRows } from "@/lib/export-projects-csv";
 import { formatUpdatedAt } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +28,7 @@ export default async function AdminProjectsPage({
 }: {
   searchParams: Promise<{
     q?: string;
+    updated?: string;
     status?: string;
     category?: string;
     license?: string;
@@ -35,53 +38,30 @@ export default async function AdminProjectsPage({
 }) {
   const params = await searchParams;
   const q = params.q?.trim() || "";
+  const updated = params.updated?.trim() || "";
+  const updatedDay = parseMmDdYyyyLocalDay(updated);
   const status = params.status && STATUSES.has(params.status) ? (params.status as ProjectStatus) : undefined;
   const category = params.category && CATEGORIES.has(params.category) ? (params.category as Category) : undefined;
   const license = params.license && LICENSES.has(params.license) ? params.license : "";
   const order = params.order === "stars" ? "stars" : "updated";
   const deletedNotice = params.notice === "deleted";
 
-  const where: Prisma.ProjectWhereInput = {
-    ...(status ? { status } : {}),
-    ...(category ? { analysis: { category } } : {}),
-    ...(license === "none"
-      ? { OR: [{ license: null }, { license: "" }] }
-      : license
-        ? { license }
-        : {}),
-    ...(q
-      ? {
-          AND: [
-            {
-              OR: [
-                { owner: { contains: q, mode: "insensitive" } },
-                { repoName: { contains: q, mode: "insensitive" } },
-                { githubUrl: { contains: q, mode: "insensitive" } },
-              ],
-            },
-          ],
-        }
-      : {}),
-  };
-
-  // Avoid clobbering license=none OR with search OR: wrap license filter in AND when both apply.
-  const whereQuery: Prisma.ProjectWhereInput =
-    license === "none" && q
-      ? {
-          ...(status ? { status } : {}),
-          ...(category ? { analysis: { category } } : {}),
-          AND: [
-            { OR: [{ license: null }, { license: "" }] },
-            {
-              OR: [
-                { owner: { contains: q, mode: "insensitive" } },
-                { repoName: { contains: q, mode: "insensitive" } },
-                { githubUrl: { contains: q, mode: "insensitive" } },
-              ],
-            },
-          ],
-        }
-      : where;
+  const and: Prisma.ProjectWhereInput[] = [];
+  if (status) and.push({ status });
+  if (category) and.push({ analysis: { category } });
+  if (license === "none") and.push({ OR: [{ license: null }, { license: "" }] });
+  else if (license) and.push({ license });
+  if (q) {
+    and.push({
+      OR: [
+        { owner: { contains: q, mode: "insensitive" } },
+        { repoName: { contains: q, mode: "insensitive" } },
+        { githubUrl: { contains: q, mode: "insensitive" } },
+      ],
+    });
+  }
+  if (updatedDay) and.push({ updatedAt: { gte: updatedDay.start, lt: updatedDay.end } });
+  const whereQuery: Prisma.ProjectWhereInput = and.length ? { AND: and } : {};
 
   const [projects, total] = await Promise.all([
     prisma.project.findMany({
@@ -102,10 +82,19 @@ export default async function AdminProjectsPage({
       <h2 className="text-lg font-semibold tracking-tight">All projects</h2>
       <AdminProjectFilters
         q={q}
+        updated={updated}
         status={status || ""}
         category={category || ""}
         license={license}
         order={order}
+        exportRows={projectsToExportRows(projects)}
+        txtIntro={
+          updatedDay
+            ? buildTodayTxtIntro(categoryCountsFromProjects(projects), {
+                dateLabel: formatLocalMmDdYyyy(updatedDay.start),
+              })
+            : undefined
+        }
       />
       <p className="mt-4 text-sm text-secondary">
         {total} project{total === 1 ? "" : "s"}
