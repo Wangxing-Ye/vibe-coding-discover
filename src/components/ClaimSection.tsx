@@ -10,7 +10,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { base } from "wagmi/chains";
-import { basescanTokenUrl } from "@/lib/base-chain";
+import Link from "next/link";
 import { claimAbi } from "@/lib/claim";
 import { buildWalletMenuRows, formatWalletError, type WalletMenuRow } from "@/lib/wallet-menu";
 
@@ -23,23 +23,8 @@ type TicketResponse = {
   chainId?: number;
 };
 
-const FALLBACK_TOKEN_ADDRESS = "0x848fa60cc5652d38c8ab61700964d8ba6682dae1";
-
 function shortAddress(value: string) {
   return `${value.slice(0, 6)}…${value.slice(-4)}`;
-}
-
-function CopyIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-    </svg>
-  );
 }
 
 export function ClaimSection() {
@@ -52,12 +37,10 @@ export function ClaimSection() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
 
   const claimAddress = process.env.NEXT_PUBLIC_VIBECD_CLAIM_ADDRESS as `0x${string}` | undefined;
   const tokenFromEnv = process.env.NEXT_PUBLIC_VIBECD_TOKEN_ADDRESS as `0x${string}` | undefined;
-  const tokenAddress = (tokenFromEnv || FALLBACK_TOKEN_ADDRESS) as `0x${string}`;
   const configured = Boolean(claimAddress && tokenFromEnv);
 
   const menuRows = useMemo(() => buildWalletMenuRows(connectors), [connectors]);
@@ -116,16 +99,6 @@ export function ClaimSection() {
     [connectAsync],
   );
 
-  const copyTokenAddress = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(tokenAddress);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setError("Could not copy token address.");
-    }
-  }, [tokenAddress]);
-
   const onClaim = useCallback(async () => {
     setError(null);
     if (!configured || !claimAddress) {
@@ -167,83 +140,25 @@ export function ClaimSection() {
   }, [address, chainId, claimAddress, configured, switchChainAsync, writeContractAsync]);
 
   return (
-    <section className="mt-20 rounded-2xl border border-border px-6 py-10 text-center">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/android-chrome-512x512.png"
-        alt="VIBECD"
-        width={256}
-        height={256}
-        className="mx-auto h-64 w-64 rounded-2xl"
-      />
-      <h2 className="mt-2 text-xl font-semibold tracking-tight">
-        {tokenAddress ? (
-          <a
-            href={basescanTokenUrl(tokenAddress)}
-            target="_blank"
-            rel="noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            VIBECD
-          </a>
-        ) : (
-          <span className="text-blue-600">VIBECD</span>
-        )}
-      </h2>
-      <div className="mx-auto mt-1 flex max-w-xl items-center justify-center gap-1.5 px-2">
-        <a
-          href={basescanTokenUrl(tokenAddress)}
-          target="_blank"
-          rel="noreferrer"
-          className="break-all font-mono text-sm leading-6 text-secondary hover:text-foreground hover:underline"
-        >
-          {tokenAddress}
-        </a>
-        <button
-          type="button"
-          onClick={() => void copyTokenAddress()}
-          className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-secondary transition-colors hover:bg-[#f4f4f5] hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
-          aria-label={copied ? "Token address copied" : "Copy token address"}
-          title={copied ? "Copied" : "Copy"}
-        >
-          <CopyIcon />
-        </button>
-      </div>
-      {copied ? <p className="mt-1 text-xs text-success">Copied</p> : null}
+    <section id="daily-claim" className="mt-20 scroll-mt-8 rounded-2xl border border-border px-6 py-10 text-center">
+      <h2 className="text-xl font-semibold tracking-tight">Daily Claim</h2>
       <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-secondary">
-        VIBECD is a commemorative memecoin celebrating vibe coding on the Base network.
-      </p>
-      <table className="mx-auto mt-4 w-full max-w-xl border-collapse text-left text-sm text-secondary">
-        <tbody>
-          <tr>
-            <th className="py-1.5 pr-4 text-right font-normal text-foreground">Fixed Supply: </th>
-            <td className="py-1.5">10,000,000,000</td>
-          </tr>
-          <tr>
-            <th className="py-1.5 pr-4 text-right font-normal text-foreground">Community supply: </th>
-            <td className="py-1.5">80% reserved for daily claim, 20% for rewards claim</td>
-          </tr>
-          <tr>
-            <th className="py-1.5 pr-4 text-right font-normal text-foreground">Daily claim cap: </th>
-            <td className="py-1.5">10,000 VIBECD once per wallet once per IP per day.</td>
-          </tr>
-
-          <tr>
-            <th className="py-1.5 pr-4 text-right font-normal text-foreground">Rewards claim cap: </th>
-            <td className="py-1.5">Up to 200,000 VIBECD once per wallet once per IP per day.</td>
-          </tr>
-          <tr>
-            <th className="py-1.5 pr-4 text-right font-normal text-foreground">Global daily cap: </th>
-            <td className="py-1.5">100,000,000 VIBECD.</td>
-          </tr>
-        </tbody>
-      </table>
-      <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-secondary">
-        This is not financial advice.
+        <Link href="/vibecd" className="text-blue-600 hover:underline">
+          VIBECD
+        </Link>{" "}
+        is a commemorative memecoin celebrating vibe coding on the Base network.
         <br />
         Claiming does not imply investment value or future returns.
         <br />
         Claiming VIBECD is free. You pay the network gas fee for the on-chain transaction.
+      </p>
+      <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-secondary">
+        10,000 VIBECD once per wallet once per IP per day.
+      </p>
+      <p className="mt-3 text-sm">
+        <Link href="/vibecd" className="text-accent hover:underline">
+          What is VIBECD?
+        </Link>
       </p>
       <div className="mt-6 flex flex-col items-center gap-3">
         <button

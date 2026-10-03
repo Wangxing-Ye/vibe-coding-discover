@@ -20,13 +20,18 @@ const NAV = [
     label: "Submit",
     match: (path: string) => path === "/submit" || path.startsWith("/submit/"),
   },
+  {
+    href: "/vibecd",
+    label: "$VIBECD",
+    match: (path: string) => path === "/vibecd" || path.startsWith("/vibecd/"),
+  },
 ];
 
 export function NavLinks() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center gap-4 text-sm text-secondary sm:gap-6">
+    <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm text-secondary sm:gap-6">
       {NAV.map((item) => {
         const active = item.match(pathname);
         return (

@@ -10,7 +10,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { base } from "wagmi/chains";
-import { basescanTokenUrl } from "@/lib/base-chain";
+import Link from "next/link";
 import { rewardsAbi } from "@/lib/rewards";
 import { buildWalletMenuRows, formatWalletError, type WalletMenuRow } from "@/lib/wallet-menu";
 
@@ -55,7 +55,6 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
   const rewardsAddress = process.env.NEXT_PUBLIC_VIBECD_REWARDS_ADDRESS as `0x${string}` | undefined;
   const tokenAddress = process.env.NEXT_PUBLIC_VIBECD_TOKEN_ADDRESS as `0x${string}` | undefined;
   const configured = Boolean(rewardsAddress && tokenAddress);
-  const tokenTxUrl = tokenAddress ? basescanTokenUrl(tokenAddress) : undefined;
 
   const refreshStatus = useCallback(async () => {
     try {
@@ -193,16 +192,12 @@ export function RewardsClaimSection({ refreshKey = 0 }: { refreshKey?: number })
   const pendingCount = hidePendingAfterClaim ? 0 : (status?.pendingCount ?? 0);
 
   return (
-    <section className="mt-10 rounded-2xl border border-border px-6 py-8 text-center">
+    <section id="rewards-claim" className="mt-10 scroll-mt-8 rounded-2xl border border-border px-6 py-8 text-center">
       <h2 className="text-lg font-semibold tracking-tight">Rewards Claim</h2>
       <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-secondary">
-        {tokenTxUrl ? (
-          <a href={tokenTxUrl} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
-            VIBECD
-          </a>
-        ) : (
-          <span className="text-blue-600">VIBECD</span>
-        )}{" "}
+        <Link href="/vibecd" className="text-blue-600 hover:underline">
+          VIBECD
+        </Link>{" "}
         is a commemorative memecoin celebrating vibe coding on the Base network.
         <br />
         Claiming does not imply investment value or future returns.

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AnalyticsProvider } from "@/components/AnalyticsProvider";
 import { ChromeTranslateGuard } from "@/components/ChromeTranslateGuard";
 import { Footer, Header } from "@/components/Header";
+import { ScrollToHash } from "@/components/ScrollToHash";
 import { WalletProviders } from "@/components/WalletProviders";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, siteUrl } from "@/lib/site";
 import "./globals.css";
@@ -63,6 +64,7 @@ export default function RootLayout({
         <ChromeTranslateGuard />
         <AnalyticsProvider>
           <WalletProviders>
+            <ScrollToHash />
             <Header />
             <main>{children}</main>
             <Footer />

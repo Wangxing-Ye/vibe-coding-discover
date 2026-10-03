@@ -4,9 +4,7 @@ import { ClaimSection } from "@/components/ClaimSection";
 import { ProjectCard, ProjectGrid } from "@/components/ProjectCard";
 import { SearchBox } from "@/components/SearchBox";
 import { UseCaseGrid } from "@/components/UseCaseGrid";
-import { UseCaseQuickFilters } from "@/components/UseCaseQuickFilters";
-import { CATEGORIES } from "@/lib/categories";
-import { getCategoryCounts, getRecentlyAdded, getTrending, countProjects, countPublishedProjectsAddedToday } from "@/lib/search";
+import { getRecentlyAdded, countProjects, countPublishedProjectsAddedToday } from "@/lib/search";
 import { SITE_DESCRIPTION } from "@/lib/site";
 import { getTodayRecommendations } from "@/lib/today-recommendation";
 import { formatUtcMmDdYyyy, startOfTodayUtc } from "@/lib/catalog-day";
@@ -16,17 +14,15 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const todayStart = startOfTodayUtc();
-  const [trending, recent, todayRecs, counts, topUseCases, publishedCount, useCaseCount, todayProjects, todayUseCases] =
+  const [recent, todayRecs, publishedCount, useCaseCount, todayProjects, todayUseCases, topUseCases] =
     await Promise.all([
-      getTrending(8),
       getRecentlyAdded(8),
       getTodayRecommendations(3),
-      getCategoryCounts(),
-      getTopUseCases(8),
       countProjects(),
       countUseCases(),
       countPublishedProjectsAddedToday(todayStart),
       countUseCasesAddedToday(todayStart),
+      getTopUseCases(8),
     ]);
 
   return (
@@ -78,24 +74,6 @@ export default async function HomePage() {
       </section>
 
       <section className="mt-20">
-        <h2 className="mb-6 text-xl font-semibold tracking-tight">Explore Categories</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-7">
-          {CATEGORIES.map((category) => (
-            <Link
-              key={category.id}
-              href={`/category/${category.slug}`}
-              className="rounded-xl border border-border bg-background p-4 transition-colors hover:border-foreground hover:bg-[#f4f4f5] active:bg-[#ebebeb]"
-            >
-              <p className="font-medium text-foreground">{category.name}</p>
-              <p className="mt-1 text-sm text-secondary">
-                {counts[category.id] ?? 0} projects
-              </p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-20">
         <div className="mb-6 flex items-end justify-between">
           <h2 className="text-xl font-semibold tracking-tight">
             Use Cases{" "}
@@ -106,19 +84,6 @@ export default async function HomePage() {
           </Link>
         </div>
         {topUseCases.length > 0 ? <UseCaseGrid useCases={topUseCases} /> : null}
-        <div className={topUseCases.length > 0 ? "mt-6" : undefined}>
-          <UseCaseQuickFilters />
-        </div>
-      </section>
-
-      <section className="mt-20">
-        <div className="mb-6 flex items-end justify-between">
-          <h2 className="text-xl font-semibold tracking-tight">Trending Projects</h2>
-          <Link href="/explore" className="text-sm text-accent hover:underline">
-            View all
-          </Link>
-        </div>
-        <ProjectGrid projects={trending} />
       </section>
 
       <ClaimSection />
