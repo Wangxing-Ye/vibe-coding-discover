@@ -68,18 +68,18 @@ export default function VibecdPage() {
       </table>
 
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <a
+        <Link
           href="/#daily-claim"
           className="inline-flex h-11 items-center rounded-full bg-foreground px-5 text-sm font-medium text-background"
         >
           Daily Claim
-        </a>
-        <a
+        </Link>
+        <Link
           href="/submit#rewards-claim"
           className="inline-flex h-11 items-center rounded-full border border-border px-5 text-sm font-medium text-foreground hover:border-foreground"
         >
           Rewards Claim
-        </a>
+        </Link>
       </div>
 
       <p className="mx-auto mt-6 max-w-xl text-center text-sm leading-6 text-secondary">
